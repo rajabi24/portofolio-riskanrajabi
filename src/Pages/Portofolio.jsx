@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../supabase";
 import PropTypes from "prop-types";
-import SwipeableViews from "react-swipeable-views";
-import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -94,15 +92,13 @@ const GalleryCard = ({ img, description }) => (
 );
 
 export default function FullWidthTabs() {
-  const theme = useTheme();
   const [value, setValue] = useState(0);
   const [certificates, setCertificates] = useState([]);
   const [gallery, setGallery] = useState([]);
   const [showAllCertificates, setShowAllCertificates] = useState(false);
   const [showAllGallery, setShowAllGallery] = useState(false);
   const isMobile = window.innerWidth < 768;
-  const initialItemsCert = isMobile ? 4 : 6;
-  const initialItemsGallery = isMobile ? 4 : 8;
+  const initialItems = isMobile ? 4 : 6;
 
   useEffect(() => { AOS.init({ once: false }); }, []);
 
@@ -129,8 +125,8 @@ export default function FullWidthTabs() {
   }, [fetchData]);
 
   const handleChange = (event, newValue) => setValue(newValue);
-  const displayedCertificates = showAllCertificates ? certificates : certificates.slice(0, initialItemsCert);
-  const displayedGallery = showAllGallery ? gallery : gallery.slice(0, initialItemsGallery);
+  const displayedCertificates = showAllCertificates ? certificates : certificates.slice(0, initialItems);
+  const displayedGallery = showAllGallery ? gallery : gallery.slice(0, initialItems);
 
   return (
     <div className="md:px-[10%] px-[5%] w-full sm:mt-0 mt-[3rem] bg-[#030014] overflow-hidden" id="Portofolio">
@@ -192,9 +188,8 @@ export default function FullWidthTabs() {
           </Tabs>
         </AppBar>
 
-        <SwipeableViews axis={theme.direction === "rtl" ? "x-reverse" : "x"} index={value} onChangeIndex={setValue}>
-
-          <TabPanel value={value} index={0} dir={theme.direction}>
+        <div>
+          <TabPanel value={value} index={0}>
             <div className="container mx-auto flex justify-center items-center overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
                 {displayedCertificates.map((cert, index) => (
@@ -206,14 +201,14 @@ export default function FullWidthTabs() {
                 ))}
               </div>
             </div>
-            {certificates.length > initialItemsCert && (
+            {certificates.length > initialItems && (
               <div className="mt-6 w-full flex justify-start">
                 <ToggleButton onClick={() => setShowAllCertificates(prev => !prev)} isShowingMore={showAllCertificates} />
               </div>
             )}
           </TabPanel>
 
-          <TabPanel value={value} index={1} dir={theme.direction}>
+          <TabPanel value={value} index={1}>
             <div className="container mx-auto flex justify-center items-center overflow-hidden">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
                 {displayedGallery.length === 0 ? (
@@ -229,14 +224,14 @@ export default function FullWidthTabs() {
                 )}
               </div>
             </div>
-            {gallery.length > initialItemsGallery && (
+            {gallery.length > initialItems && (
               <div className="mt-6 w-full flex justify-start">
                 <ToggleButton onClick={() => setShowAllGallery(prev => !prev)} isShowingMore={showAllGallery} />
               </div>
             )}
           </TabPanel>
 
-          <TabPanel value={value} index={2} dir={theme.direction}>
+          <TabPanel value={value} index={2}>
             <div className="container mx-auto flex justify-center items-center overflow-hidden pb-[5%]">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-8 gap-5">
                 {techStacks.map((stack, index) => (
@@ -249,8 +244,8 @@ export default function FullWidthTabs() {
               </div>
             </div>
           </TabPanel>
+        </div>
 
-        </SwipeableViews>
       </Box>
     </div>
   );
