@@ -52,16 +52,23 @@ const ProfileImage = memo(() => (
 ));
 
 const OrganizationCard = memo(({ icon: Icon, title, role, year, color }) => (
-  <div className="relative group flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-500/40 transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1 cursor-pointer overflow-hidden">
-    <div className={`absolute -z-10 inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-2xl`}></div>
-    <div className="absolute -inset-1 bg-gradient-to-r from-[#1d4ed8] to-[#0ea5e9] rounded-2xl blur-md opacity-0 group-hover:opacity-20 transition-all duration-500 -z-20"></div>
-    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-500/20 shrink-0 group-hover:bg-blue-500/40 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-      <Icon className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
-    </div>
-    <div>
-      <p className="text-white font-semibold text-sm group-hover:text-blue-200 transition-colors duration-300">{role}</p>
-      <p className="text-gray-400 text-xs mt-0.5 group-hover:text-gray-300 transition-colors duration-300">{title}</p>
-      <span className="text-[11px] text-blue-400 mt-1 inline-block">{year}</span>
+  <div className="relative bg-gradient-to-br from-[#1d4ed8]/5 via-transparent to-[#0ea5e9]/5 border border-[#1d4ed8]/30 rounded-2xl p-4 backdrop-blur-md shadow-2xl overflow-hidden group hover:border-[#1d4ed8]/60 transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1 cursor-pointer">
+    {/* Glow sudut kanan atas */}
+    <div className="absolute top-2 right-4 w-16 h-16 bg-gradient-to-r from-[#1d4ed8]/20 to-[#0ea5e9]/20 rounded-full blur-xl" />
+    {/* Glow sudut kiri bawah */}
+    <div className="absolute -bottom-4 -left-2 w-12 h-12 bg-gradient-to-r from-[#0ea5e9]/20 to-[#1d4ed8]/20 rounded-full blur-lg" />
+    {/* Glow hover */}
+    <div className="absolute -inset-1 bg-gradient-to-r from-[#1d4ed8] to-[#0ea5e9] rounded-2xl blur-md opacity-0 group-hover:opacity-20 transition-all duration-500 -z-10" />
+
+    <div className="relative z-10 flex items-start gap-4">
+      <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-500/20 shrink-0 group-hover:bg-blue-500/40 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+        <Icon className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
+      </div>
+      <div>
+        <p className="text-white font-semibold text-sm group-hover:text-blue-200 transition-colors duration-300">{role}</p>
+        <p className="text-gray-400 text-xs mt-0.5 group-hover:text-gray-300 transition-colors duration-300">{title}</p>
+        <span className="text-[11px] text-blue-400 mt-1 inline-block">{year}</span>
+      </div>
     </div>
   </div>
 ));
@@ -122,15 +129,16 @@ const AboutPage = () => {
               Saya adalah mahasiswa Informatika di Universitas Syiah Kuala yang tertarik pada Software Engineering, GIS, dan Data. Saya senang membangun solusi digital yang fungsional dan berdampak nyata, serta terus belajar teknologi baru untuk berkembang.
             </p>
 
-            <p className="text-base sm:text-lg lg:text-xl text-gray-400  leading-relaxed text-justify"
+            <p className="text-base sm:text-lg lg:text-xl text-gray-400 leading-relaxed text-justify"
               data-aos="fade-right" data-aos-duration="1600">
               Selain dunia teknologi, saya juga aktif dalam kegiatan organisasi dan kepemimpinan. Pengalaman sebagai Ketua OSIS dan Ketua Forum Pelajar Muslim mengajarkan saya arti tanggung jawab, kolaborasi, dan bagaimana memimpin dengan hati.
             </p>
 
+            {/* Quote box */}
             <div className="relative bg-gradient-to-br from-[#1d4ed8]/5 via-transparent to-[#0ea5e9]/5 border border-[#1d4ed8]/30 rounded-2xl p-4 my-6 backdrop-blur-md shadow-2xl overflow-hidden"
               data-aos="fade-up" data-aos-duration="1700">
-              <div className="absolute top-2 right-4 w-16 h-16 bg-gradient-to-r from-[#1d4ed8]/20 to-[#0ea5e9]/20 rounded-full blur-xl"></div>
-              <div className="absolute -bottom-4 -left-2 w-12 h-12 bg-gradient-to-r from-[#0ea5e9]/20 to-[#1d4ed8]/20 rounded-full blur-lg"></div>
+              <div className="absolute top-2 right-4 w-16 h-16 bg-gradient-to-r from-[#1d4ed8]/20 to-[#0ea5e9]/20 rounded-full blur-xl" />
+              <div className="absolute -bottom-4 -left-2 w-12 h-12 bg-gradient-to-r from-[#0ea5e9]/20 to-[#1d4ed8]/20 rounded-full blur-lg" />
               <div className="absolute top-3 left-4 text-[#1d4ed8] opacity-30">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>

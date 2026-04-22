@@ -72,5 +72,5 @@ const AnimatedBackground = () => {
 	)
 }
 
-export default AnimatedBackground
+export default AnimatedBackground;
 

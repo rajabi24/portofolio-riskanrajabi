@@ -137,7 +137,7 @@ const WelcomeScreen = ({ onLoadingComplete }) => {
                     <span data-aos="fade-up" data-aos-delay="800" className="inline-block px-2 bg-gradient-to-r from-[#1d4ed8] to-[#0ea5e9] bg-clip-text text-transparent">
                       Space of
                     </span>{' '}
-                    <span data-aos="fade-up" data-aos-delay="1000" className="inline-block py-10 px-2 bg-gradient-to-r from-[#1d4ed8] to-[#0ea5e9] bg-clip-text text-transparent">
+                    <span data-aos="fade-up" data-aos-delay="1000" className="inline-block py-2 px-2 bg-gradient-to-r from-[#1d4ed8] to-[#0ea5e9] bg-clip-text text-transparent">
                       Muhammad Riskan Rajabi
                     </span>
                   </div>

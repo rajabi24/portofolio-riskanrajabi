@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import PresenceWidget from "./PresenceWidget";
 
 const socialLinks = [
   {

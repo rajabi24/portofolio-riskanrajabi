@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 import Certificates from './dashboard/Pengalaman'
-import Gallery from './dashboard/Gallery'
+import Gallery from './dashboard/Project'
 import Comments from './dashboard/Comments'
-import { Award, Images, MessageSquare, LogOut, LayoutDashboard, Menu } from 'lucide-react'
+import { Award, FolderKanban, MessageSquare, LogOut, LayoutDashboard, Menu } from 'lucide-react'
 
 const NAV_ITEMS = [
   { to: 'certificates', label: 'Pengalaman', icon: Award },
-  { to: 'gallery', label: 'Gallery', icon: Images },
+  { to: 'gallery', label: 'Project', icon: FolderKanban },
   { to: 'comments', label: 'Comments', icon: MessageSquare },
 ]
 

@@ -9,7 +9,9 @@ import Box from "@mui/material/Box";
 import TechStackIcon from "../components/TechStackIcon";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { Award, Boxes, Images } from "lucide-react";
+import { Award, Boxes, FolderKanban, UserCircle } from "lucide-react";
+import { User, MapPin, GraduationCap, Music2, Camera, Code2, Plane, Video } from "lucide-react";
+
 
 const ToggleButton = ({ onClick, isShowingMore }) => (
   <button onClick={onClick}
@@ -54,49 +56,59 @@ const techStacks = [
   { icon: "html.svg", language: "HTML" },
   { icon: "css.svg", language: "CSS" },
   { icon: "javascript.svg", language: "JavaScript" },
-  { icon: "tailwind.svg", language: "Tailwind CSS" },
-  { icon: "reactjs.svg", language: "ReactJS" },
   { icon: "vite.svg", language: "Vite" },
   { icon: "nodejs.svg", language: "Node JS" },
-  { icon: "bootstrap.svg", language: "Bootstrap" },
-  { icon: "firebase.svg", language: "Firebase" },
-  { icon: "MUI.svg", language: "Material UI" },
-  { icon: "vercel.svg", language: "Vercel" },
-  { icon: "SweetAlert.svg", language: "SweetAlert2" },
+  { icon: "pyton.svg", language: "Python" },
+  { icon: "c.svg", language: "C" },
+  { icon: "mysql.svg", language: "Mysql" },
 ];
 
-const ExperienceCard = ({ img, description }) => (
-  <div className="relative group rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
-    <div className="aspect-video overflow-hidden">
-      <img src={img} alt="Experience" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-    </div>
-    {description && (
-      <div className="p-4">
-        <p className="text-gray-300 text-sm leading-relaxed">{description}</p>
-      </div>
-    )}
-  </div>
-);
+const education = [
+  { school: "SDN 01 Lubuk Jering", level: "SD" },
+  { school: "Pondok Pesantren Gontor 12", level: "SMP" },
+  { school: "MAN 1 Siak", level: "SMA" },
+  { school: "Universitas Syiah Kuala", level: "S1" },
+];
 
-const GalleryCard = ({ img, description }) => (
-  <div className="relative group rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
-    <div className="aspect-square overflow-hidden">
-      <img src={img} alt="Gallery" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-    </div>
-    {description && (
-      <div className="p-3">
-        <p className="text-gray-300 text-sm leading-relaxed">{description}</p>
+const musics = [
+  { title: "Saturn", artist: "SZA", spotify: "https://open.spotify.com/track/040I32EKLxQrkuxQu1pqvT" },
+  { title: "Usik", artist: "Febi Putri", spotify: "https://open.spotify.com/search/Usik%20Feb%20Putri" },
+  { title: "Good Days", artist: "SZA", spotify: "https://open.spotify.com/search/Good%20Days%20SZA" },
+];
+
+const hobbies = [
+  { name: "Fotografi", icon: Camera },
+  { name: "Coding", icon: Code2 },
+  { name: "Traveling", icon: Plane },
+  { name: "Videografi", icon: Video },
+];
+
+const SharedCard = ({ img, description }) => (
+  <div className="relative group">
+    <div className="absolute -inset-0.5 bg-gradient-to-r from-[#1d4ed8] to-[#0ea5e9] rounded-2xl blur opacity-10 group-hover:opacity-30 transition duration-500" />
+    <div className="relative bg-white/5 border border-white/12 rounded-2xl overflow-hidden backdrop-blur-sm">
+      <div className="aspect-video overflow-hidden">
+        <img
+          src={img}
+          alt="Card"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
       </div>
-    )}
+      {description && (
+        <div className="p-4">
+          <p className="text-gray-300 text-sm leading-relaxed">{description}</p>
+        </div>
+      )}
+    </div>
   </div>
 );
 
 export default function FullWidthTabs() {
   const [value, setValue] = useState(0);
   const [certificates, setCertificates] = useState([]);
-  const [gallery, setGallery] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [showAllCertificates, setShowAllCertificates] = useState(false);
-  const [showAllGallery, setShowAllGallery] = useState(false);
+  const [showAllProjects, setShowAllProjects] = useState(false);
   const isMobile = window.innerWidth < 768;
   const initialItems = isMobile ? 4 : 6;
 
@@ -104,29 +116,26 @@ export default function FullWidthTabs() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [certRes, galleryRes] = await Promise.all([
+      const [certRes, projectRes] = await Promise.all([
         supabase.from("certificates").select("*").order('id', { ascending: false }),
         supabase.from("gallery").select("*").order('id', { ascending: false }),
       ]);
       if (certRes.error) throw certRes.error;
-      if (galleryRes.error) throw galleryRes.error;
+      if (projectRes.error) throw projectRes.error;
       setCertificates(certRes.data || []);
-      setGallery(galleryRes.data || []);
-      localStorage.setItem("certificates", JSON.stringify(certRes.data || []));
+      setProjects(projectRes.data || []);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   }, []);
 
   useEffect(() => {
-    const cached = localStorage.getItem('certificates');
-    if (cached) setCertificates(JSON.parse(cached));
     fetchData();
   }, [fetchData]);
 
   const handleChange = (event, newValue) => setValue(newValue);
   const displayedCertificates = showAllCertificates ? certificates : certificates.slice(0, initialItems);
-  const displayedGallery = showAllGallery ? gallery : gallery.slice(0, initialItems);
+  const displayedProjects = showAllProjects ? projects : projects.slice(0, initialItems);
 
   return (
     <div className="md:px-[10%] px-[5%] w-full sm:mt-0 mt-[3rem] bg-[#030014] overflow-hidden" id="Portofolio">
@@ -167,7 +176,7 @@ export default function FullWidthTabs() {
             sx={{
               minHeight: "70px",
               "& .MuiTab-root": {
-                fontSize: { xs: "0.9rem", md: "1rem" },
+                fontSize: { xs: "0.75rem", md: "1rem" },
                 fontWeight: "600",
                 color: "#94a3b8",
                 textTransform: "none",
@@ -183,12 +192,14 @@ export default function FullWidthTabs() {
               "& .MuiTabs-flexContainer": { gap: "8px" },
             }}>
             <Tab icon={<Award className="mb-2 w-5 h-5 transition-all duration-300" />} label="Pengalaman" {...a11yProps(0)} />
-            <Tab icon={<Images className="mb-2 w-5 h-5 transition-all duration-300" />} label="Gallery" {...a11yProps(1)} />
+            <Tab icon={<FolderKanban className="mb-2 w-5 h-5 transition-all duration-300" />} label="Project" {...a11yProps(1)} />
             <Tab icon={<Boxes className="mb-2 w-5 h-5 transition-all duration-300" />} label="Tech Stack" {...a11yProps(2)} />
+            <Tab icon={<UserCircle className="mb-2 w-5 h-5 transition-all duration-300" />} label="About Me" {...a11yProps(3)} />
           </Tabs>
         </AppBar>
 
         <div>
+          {/* TAB PENGALAMAN */}
           <TabPanel value={value} index={0}>
             <div className="container mx-auto flex justify-center items-center overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
@@ -196,7 +207,7 @@ export default function FullWidthTabs() {
                   <div key={cert.id || index}
                     data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
                     data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}>
-                    <ExperienceCard img={cert.img} description={cert.description} />
+                    <SharedCard img={cert.img} description={cert.description} />
                   </div>
                 ))}
               </div>
@@ -208,32 +219,34 @@ export default function FullWidthTabs() {
             )}
           </TabPanel>
 
+          {/* TAB PROJECT */}
           <TabPanel value={value} index={1}>
             <div className="container mx-auto flex justify-center items-center overflow-hidden">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
-                {displayedGallery.length === 0 ? (
-                  <div className="col-span-4 text-center py-16 text-gray-500">Belum ada foto gallery.</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+                {displayedProjects.length === 0 ? (
+                  <div className="col-span-3 text-center py-16 text-gray-500">Belum ada data project.</div>
                 ) : (
-                  displayedGallery.map((item, index) => (
+                  displayedProjects.map((item, index) => (
                     <div key={item.id || index}
                       data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
                       data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}>
-                      <GalleryCard img={item.img} description={item.description} />
+                      <SharedCard img={item.img} description={item.description} />
                     </div>
                   ))
                 )}
               </div>
             </div>
-            {gallery.length > initialItems && (
+            {projects.length > initialItems && (
               <div className="mt-6 w-full flex justify-start">
-                <ToggleButton onClick={() => setShowAllGallery(prev => !prev)} isShowingMore={showAllGallery} />
+                <ToggleButton onClick={() => setShowAllProjects(prev => !prev)} isShowingMore={showAllProjects} />
               </div>
             )}
           </TabPanel>
 
+          {/* TAB TECH STACK */}
           <TabPanel value={value} index={2}>
             <div className="container mx-auto flex justify-center items-center overflow-hidden pb-[5%]">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-8 gap-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-8 gap-5">
                 {techStacks.map((stack, index) => (
                   <div key={index}
                     data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
@@ -244,8 +257,136 @@ export default function FullWidthTabs() {
               </div>
             </div>
           </TabPanel>
-        </div>
 
+          {/* TAB ABOUT ME */}
+          <TabPanel value={value} index={3}>
+            <div className="relative rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-duration="800">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-[#1d4ed8] to-[#0ea5e9] rounded-2xl blur opacity-20" />
+              <div className="relative bg-gradient-to-b from-[#050a14]/95 to-[#02060e]/98 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-6 sm:p-8">
+                <div className="space-y-6">
+
+                  {/* Biodata */}
+                  <div data-aos="fade-up" data-aos-duration="800">
+                    <p className="text-xs uppercase tracking-widest text-blue-400 mb-3 font-medium flex items-center gap-2">
+                      <span className="inline-block w-5 h-0.5 bg-blue-500 rounded-full"></span>
+                      Biodata
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {[
+                        { icon: User, label: "Nama", value: "Muhammad Riskan Rajabi" },
+                        { icon: MapPin, label: "Asal", value: "Siak, Riau" },
+                      ].map((item, i) => {
+                        const Icon = item.icon;
+                        return (
+                          <div key={i} className="relative bg-gradient-to-br from-[#1d4ed8]/10 via-transparent to-[#0ea5e9]/10 border border-[#1d4ed8]/40 rounded-2xl p-4 backdrop-blur-md overflow-hidden group hover:border-[#1d4ed8]/70 transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(29,78,216,0.15)] cursor-default flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-500/10 shrink-0 group-hover:bg-blue-500/20 transition-colors duration-300">
+                              <Icon size={18} className="text-blue-400" />
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-[11px] mb-0.5">{item.label}</p>
+                              <p className="text-white/80 font-medium text-sm">{item.value}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/[0.04]" />
+
+                  {/* Pendidikan */}
+                  <div data-aos="fade-up" data-aos-duration="1000">
+                    <p className="text-xs uppercase tracking-widest text-blue-400 mb-3 font-medium flex items-center gap-2">
+                      <span className="inline-block w-5 h-0.5 bg-blue-500 rounded-full"></span>
+                      Pendidikan
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5" data-aos="fade-up" data-aos-delay="100">
+                      {education.map((item, index) => (
+                        <div key={index}
+                          className="relative bg-gradient-to-br from-[#1d4ed8]/10 via-transparent to-[#0ea5e9]/10 border border-[#1d4ed8]/40 rounded-2xl p-4 backdrop-blur-md overflow-hidden group hover:border-[#1d4ed8]/70 transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(29,78,216,0.15)] cursor-default flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-gradient-to-br from-[#1d4ed8]/30 to-[#0ea5e9]/30 shrink-0 group-hover:scale-110 transition-all duration-300">
+                            <GraduationCap size={16} className="text-blue-300" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white/80 font-medium text-sm truncate">{item.school}</p>
+                            <span className="text-[10px] text-blue-400/80 mt-0.5 inline-block bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/15">{item.level}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/[0.04]" />
+
+                  {/* Musik */}
+                  <div data-aos="fade-up" data-aos-duration="1200">
+                    <p className="text-xs uppercase tracking-widest text-blue-400 mb-3 font-medium flex items-center gap-2">
+                      <span className="inline-block w-5 h-0.5 bg-blue-500 rounded-full"></span>
+                      Musik Kesukaan
+                    </p>
+                    <div className="grid grid-cols-3 gap-2.5" data-aos="fade-up" data-aos-delay="100">
+                      {musics.map((music, index) => (
+                        <a key={index}
+                          href={music.spotify}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative bg-gradient-to-br from-[#1d4ed8]/10 via-transparent to-[#0ea5e9]/10 border border-[#1d4ed8]/40 rounded-2xl p-4 backdrop-blur-md overflow-hidden group hover:border-[#1d4ed8]/70 transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(29,78,216,0.15)] cursor-pointer flex flex-col items-center text-center gap-2">
+                          <div className="w-11 h-11 rounded-full flex items-center justify-center bg-blue-500/10 group-hover:bg-blue-500/20 group-hover:scale-110 transition-all duration-300">
+                            <Music2 size={20} className="text-blue-400" />
+                          </div>
+                          <div>
+                            <p className="text-white/80 font-medium text-xs leading-snug">{music.title}</p>
+                            <p className="text-gray-500 text-[10px] mt-0.5">{music.artist}</p>
+                          </div>
+                          <div className="flex items-end gap-0.5 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div className="w-0.5 bg-blue-400 rounded-full animate-music-1"></div>
+                            <div className="w-0.5 bg-blue-400 rounded-full animate-music-2"></div>
+                            <div className="w-0.5 bg-blue-400 rounded-full animate-music-3"></div>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/[0.04]" />
+
+                  {/* Hobi */}
+                  <div data-aos="fade-up" data-aos-duration="1400">
+                    <p className="text-xs uppercase tracking-widest text-blue-400 mb-3 font-medium flex items-center gap-2">
+                      <span className="inline-block w-5 h-0.5 bg-blue-500 rounded-full"></span>
+                      Hobi
+                    </p>
+                    <div className="grid grid-cols-2 gap-2.5" data-aos="fade-up" data-aos-delay="100">
+                      {hobbies.map((hobby, index) => {
+                        const Icon = hobby.icon;
+                        return (
+                          <div key={index}
+                            className="relative bg-gradient-to-br from-[#1d4ed8]/10 via-transparent to-[#0ea5e9]/10 border border-[#1d4ed8]/40 rounded-2xl p-4 backdrop-blur-md overflow-hidden group hover:border-[#1d4ed8]/70 transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(29,78,216,0.15)] cursor-default flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-500/10 shrink-0 group-hover:bg-blue-500/20 group-hover:scale-110 transition-all duration-300">
+                              <Icon size={20} className="text-blue-400" />
+                            </div>
+                            <p className="text-white/80 font-medium text-sm">{hobby.name}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <style>{`
+              @keyframes music-1 { 0%, 100% { height: 30%; } 50% { height: 90%; } }
+              @keyframes music-2 { 0%, 100% { height: 60%; } 50% { height: 100%; } }
+              @keyframes music-3 { 0%, 100% { height: 40%; } 50% { height: 85%; } }
+              .animate-music-1 { animation: music-1 0.6s ease-in-out infinite; }
+              .animate-music-2 { animation: music-2 0.6s ease-in-out 0.15s infinite; }
+              .animate-music-3 { animation: music-3 0.6s ease-in-out 0.3s infinite; }
+            `}</style>
+          </TabPanel>
+
+        </div>
       </Box>
     </div>
   );

@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from "../supabase";
 import { MessageCircle, UserCircle2, Loader2, AlertCircle, Send, ImagePlus, X, Pin } from 'lucide-react';
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { supabase } from '../supabase';
-
 
 const Comment = memo(({ comment, formatDate, index, isPinned = false }) => (
     <div 
@@ -25,7 +23,7 @@ const Comment = memo(({ comment, formatDate, index, isPinned = false }) => (
                 <img
                     src={comment.profile_image}
                     alt={`${comment.user_name}'s profile`}
-                    className={`w-10 h-10 rounded-full object-cover border-2 flex-shrink-0  ${
+                    className={`w-10 h-10 rounded-full object-cover border-2 flex-shrink-0 ${
                         isPinned ? 'border-blue-500/50' : 'border-blue-500/30'
                     }`}
                     loading="lazy"
@@ -79,13 +77,11 @@ const CommentForm = memo(({ onSubmit, isSubmitting, error }) => {
                 if (e.target) e.target.value = '';
                 return;
             }
-            
             if (!file.type.startsWith('image/')) {
                 alert('Please select a valid image file.');
                 if (e.target) e.target.value = '';
                 return;
             }
-            
             setImageFile(file);
             const reader = new FileReader();
             reader.onloadend = () => setImagePreview(reader.result);
@@ -104,7 +100,6 @@ const CommentForm = memo(({ onSubmit, isSubmitting, error }) => {
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
         if (!newComment.trim() || !userName.trim()) return;
-        
         onSubmit({ newComment, userName, imageFile });
         setNewComment('');
         setUserName('');
@@ -197,12 +192,12 @@ const CommentForm = memo(({ onSubmit, isSubmitting, error }) => {
             </div>
 
             <button
-    type="submit"
-    disabled={isSubmitting}
-    data-aos="fade-up" data-aos-duration="1000"
-    className="w-full h-12 bg-gradient-to-r from-[#1d4ed8] to-[#0ea5e9] rounded-xl font-medium text-white transition-all duration-300 hover:shadow-[0_0_25px_rgba(14,165,233,0.6)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-    <div className="flex items-center justify-center gap-2">
+                type="submit"
+                disabled={isSubmitting}
+                data-aos="fade-up" data-aos-duration="1000"
+                className="w-full h-12 bg-gradient-to-r from-[#1d4ed8] to-[#0ea5e9] rounded-xl font-medium text-white transition-all duration-300 hover:shadow-[0_0_25px_rgba(14,165,233,0.6)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <div className="flex items-center justify-center gap-2">
                     {isSubmitting ? (
                         <>
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -240,9 +235,9 @@ const Komentar = () => {
                     .from('portfolio_comments')
                     .select('*')
                     .eq('is_pinned', true)
-                    .single();
+                    .maybeSingle(); // ← fix: ganti dari .single()
                 
-                if (error && error.code !== 'PGRST116') {
+                if (error) {
                     console.error('Error fetching pinned comment:', error);
                     return;
                 }
@@ -307,9 +302,7 @@ const Komentar = () => {
             .from('project-images')
             .upload(filePath, imageFile);
 
-        if (uploadError) {
-            throw uploadError;
-        }
+        if (uploadError) throw uploadError;
 
         const { data } = supabase.storage
             .from('project-images')
@@ -319,56 +312,47 @@ const Komentar = () => {
     }, []);
 
     const handleCommentSubmit = useCallback(async ({ newComment, userName, imageFile }) => {
-    setError('');
-    setIsSubmitting(true);
+        setError('');
+        setIsSubmitting(true);
 
-    // 👉 bikin komentar sementara (optimistic)
-    const tempComment = {
-        id: Date.now(), // temporary id
-        content: newComment,
-        user_name: userName,
-        profile_image: imageFile ? URL.createObjectURL(imageFile) : null,
-        is_pinned: false,
-        created_at: new Date().toISOString()
-    };
+        const tempComment = {
+            id: Date.now(),
+            content: newComment,
+            user_name: userName,
+            profile_image: imageFile ? URL.createObjectURL(imageFile) : null,
+            is_pinned: false,
+            created_at: new Date().toISOString()
+        };
 
-    // 👉 langsung tampilkan di UI
-    setComments(prev => [tempComment, ...prev]);
+        setComments(prev => [tempComment, ...prev]);
 
-    try {
-        const profileImageUrl = await uploadImage(imageFile);
+        try {
+            const profileImageUrl = await uploadImage(imageFile);
 
-        const { data, error } = await supabase
-            .from('portfolio_comments')
-            .insert([
-                {
+            const { data, error } = await supabase
+                .from('portfolio_comments')
+                .insert([{
                     content: newComment,
                     user_name: userName,
                     profile_image: profileImageUrl,
                     is_pinned: false,
                     created_at: new Date().toISOString()
-                }
-            ])
-            .select()
-            .single();
+                }])
+                .select()
+                .single();
 
-        if (error) throw error;
+            if (error) throw error;
 
-        setComments(prev =>
-            prev.map(c => (c.id === tempComment.id ? data : c))
-        );
+            setComments(prev => prev.map(c => (c.id === tempComment.id ? data : c)));
 
-    } catch (error) {
-        setComments(prev =>
-            prev.filter(c => c.id !== tempComment.id)
-        );
-
-        setError('Failed to post comment. Please try again.');
-        console.error('Error adding comment: ', error);
-    } finally {
-        setIsSubmitting(false);
-    }
-}, [uploadImage]);
+        } catch (error) {
+            setComments(prev => prev.filter(c => c.id !== tempComment.id));
+            setError('Failed to post comment. Please try again.');
+            console.error('Error adding comment: ', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }, [uploadImage]);
 
     const formatDate = useCallback((timestamp) => {
         if (!timestamp) return '';
@@ -446,22 +430,6 @@ const Komentar = () => {
                     )}
                 </div>
             </div>
-            <style jsx>{`
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: rgba(255, 255, 255, 0.05);
-                    border-radius: 6px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(29, 78, 216, 0.5);
-                    border-radius: 6px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(29, 78, 216, 0.7);
-                }
-            `}</style>
         </div>
     );
 };
